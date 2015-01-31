@@ -1,0 +1,25 @@
+{
+  "name": "thinkspill/FindMethodExceptions",
+  "description": "Detects all exceptions a method could throw",
+  "minimum-stability": "dev",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Ian Cook",
+      "email": "fme@thinkspill.org"
+    }
+  ],
+  "require": {
+    "phpspec/phpspec": "~2"
+  },
+  "autoload":
+  {
+    "psr-4":
+    {
+      "thinkspill\\": "src"
+    }
+  },
+  "config": {
+    "bin-dir": "bin"
+  }
+}

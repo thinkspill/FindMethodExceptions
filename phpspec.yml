@@ -1,0 +1,4 @@
+suites:
+    methodexceptions_suite:
+        namespace: thinkspill
+        psr4_prefix: thinkspill
