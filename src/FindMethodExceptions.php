@@ -7,13 +7,11 @@ class FindMethodExceptions
 {
     protected $matches = [];
 
-    public function find($classname, $method_name = false)
+    public function find($class, $method_name = false)
     {
-        if (!class_exists($classname)) {
+        if (!class_exists($class)) {
             return "Class not found";
         }
-
-        $class = $classname;
         $reflection = new ReflectionClass($class);
         if ($method_name) {
             $this->analyze_method($class, $method_name);
@@ -34,53 +32,18 @@ class FindMethodExceptions
     {
         $reflected_method = new ReflectionMethod($class, $method);
         $filename = $reflected_method->getFileName();
+        $file = file($filename);
+        if (!$file) {
+            return;
+        }
         $startline = $reflected_method->getStartLine();
         $endline = $reflected_method->getEndLine();
-        $file = file($filename);
-        if ($file) {
-            $source = '';
-            for ($i = $startline; $i <= $endline; $i++) {
-                $this->try_preg_match_all($method, $file, $i);
-//                $source .= $file[$i];
-            }
-
-//            $this->try_tokenizing($method, $source);
+        $source = '';
+        for ($i = $startline; $i <= $endline; $i++) {
+            //$this->try_preg_match_all($method, $file, $i);
+            $source .= $file[$i];
         }
-    }
-
-    /**
-     * @param $line
-     * @return mixed
-     */
-    private function find_matches($line)
-    {
-        if (strpos($line, 'throw') === false) return false;
-        $matches = [];
-        $res = [];
-        preg_match_all('/(.*throw[\n\r ]new[\n\r ]([_a-z0-9]*)[($a-z)]*;)+/iU', $line, $matches, PREG_SET_ORDER);
-        foreach ($matches as $m) {
-            $res[] = $m[2];
-        }
-
-        if (count($res)) {
-            return $res;
-        } else return false;
-    }
-
-    /**
-     * @param $method
-     * @param $file
-     * @param $i
-     */
-    private function try_preg_match_all($method, $file, $i)
-    {
-        $line = trim($file[$i]);
-        if ($matches = $this->find_matches($line)) {
-            if (empty($this->matches[$method])) {
-                $this->matches[$method] = [];
-            }
-            $this->matches[$method] = array_merge($this->matches[$method], $matches);
-        }
+        $this->try_tokenizing($method, $source);
     }
 
     /**
@@ -117,5 +80,40 @@ class FindMethodExceptions
         }
 
         $this->matches[$method] = $res;
+    }
+
+    /**
+     * @param $method
+     * @param $file
+     * @param $i
+     */
+    private function try_preg_match_all($method, $file, $i)
+    {
+        $line = trim($file[$i]);
+        if ($matches = $this->find_matches($line)) {
+            if (empty($this->matches[$method])) {
+                $this->matches[$method] = [];
+            }
+            $this->matches[$method] = array_merge($this->matches[$method], $matches);
+        }
+    }
+
+    /**
+     * @param $line
+     * @return mixed
+     */
+    private function find_matches($line)
+    {
+        if (strpos($line, 'throw') === false) return false;
+        $matches = [];
+        $res = [];
+        preg_match_all('/(.*throw[\n\r ]new[\n\r ]([_a-z0-9]*)[($a-z)]*;)+/iU', $line, $matches, PREG_SET_ORDER);
+        foreach ($matches as $m) {
+            $res[] = $m[2];
+        }
+
+        if (count($res)) {
+            return $res;
+        } else return false;
     }
 }
