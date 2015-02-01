@@ -1,12 +1,7 @@
-<?php
+<?php namespace spec\thinkspill;
 
-namespace spec\thinkspill;
-xdebug_disable();
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-
-require_once __DIR__ . '/../vendor/autoload.php';
-
 
 class FindMethodExceptionsSpec extends ObjectBehavior
 {
