@@ -85,11 +85,11 @@ class FindMethodExceptions
     /**
      * @param $method
      * @param $file
-     * @param $i
+     * @param $line_number
      */
-    private function try_preg_match_all($method, $file, $i)
+    private function try_preg_match_all($method, $file, $line_number)
     {
-        $line = trim($file[$i]);
+        $line = trim($file[$line_number]);
         if ($matches = $this->find_matches($line)) {
             if (empty($this->matches[$method])) {
                 $this->matches[$method] = [];
